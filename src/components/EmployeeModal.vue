@@ -3,7 +3,7 @@
     <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-5 z-50 flex items-center justify-center"
         @click.self="closeModal">
         <!-- Modal Content -->
-        <div v-if="employee" class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
+        <div v-if="employee" class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/2 p-6">
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Employee Details</h2>
@@ -29,17 +29,15 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="flex justify-end">
-                <button @click="closeModal"
-                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300 cursor-pointer">
-                    Close
-                </button>
+            <div class="flex justify-end mt-10">
+                <Button color="gray" @click="closeModal">Cancel</Button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import Button from '../assets/ui/Button.vue';
 const props = defineProps({
     isOpen: {
         type: Boolean,

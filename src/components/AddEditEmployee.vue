@@ -7,25 +7,26 @@
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">{{ employee && employee.id ? 'Edit' : 'Add' }} Employee</h2>
-                <button @click="actions.closeModal" class="text-gray-500 hover:text-gray-700 text-[20px] cursor-pointer">
+                <button @click="actions.closeModal"
+                    class="text-gray-500 hover:text-gray-700 text-[20px] cursor-pointer">
                     &times;
                 </button>
             </div>
 
             <!-- Modal Body -->
-            <form @submit.prevent>
+            <form @submit.prevent="actions.save">
                 <div class="grid grid-cols-2 gap-4">
-                    <TextField v-model="employeeInfo.data.code" type="text" label="Employee Code"
-                        placeholder="Enter Employee Code" />
+                    <TextField v-model="employeeInfo.data.code" type="text" label="Employee Code*"
+                        placeholder="Enter Employee Code" required />
 
-                    <TextField v-model="employeeInfo.data.fullName" type="text" label="Full Name"
-                        placeholder="Enter Employee Name" />
+                    <TextField v-model="employeeInfo.data.fullName" type="text" label="Full Name*"
+                        placeholder="Enter Employee Name" required />
 
-                    <TextField v-model="employeeInfo.data.occupation" type="text" label="Occupation"
-                        placeholder="Enter Occupation" />
+                    <TextField v-model="employeeInfo.data.occupation" type="text" label="Occupation*"
+                        placeholder="Enter Occupation" required />
 
-                    <TextField v-model="employeeInfo.data.department" type="text" label="Department"
-                        placeholder="Enter Department" />
+                    <TextField v-model="employeeInfo.data.department" type="text" label="Department*"
+                        placeholder="Enter Department" required />
 
                     <TextField v-model="employeeInfo.data.dateOfEmployment" type="date" label="Employement Date"
                         placeholder="Employement Date" />
@@ -34,15 +35,9 @@
                         placeholder="Termination Date" />
                 </div>
 
-                <div class="flex justify-end mt-4">
-                    <button type="submit" @click="actions.save"
-                        class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300 cursor-pointer mr-2">
-                        Save
-                    </button>
-                    <button type="button" @click="actions.closeModal"
-                        class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition duration-300 cursor-pointer">
-                        Cancel
-                    </button>
+                <div class="flex justify-end mt-10">
+                    <Button type="submit" color="blue" class="mr-2">Save</Button>
+                    <Button type="button" color="gray">Cancel</Button>
                 </div>
             </form>
         </div>
@@ -50,8 +45,9 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TextField from '../assets/ui/TextField.vue';
+import Button from '../assets/ui/Button.vue';
 
 const props = defineProps({
     isOpen: {
@@ -79,12 +75,41 @@ const employeeInfo = reactive({
     }
 });
 
+const errors = ref([]);
+
+const isMissingField = computed(() => {
+    const { fullName, code, occupation, department } = employeeInfo.data;
+    // if (!fullName) {
+    //     errors.value.push({ key: fullName, text: 'Full name is required.' });
+    // }
+    // if (!code) {
+    //     errors.value.push({ key: fullName, text: 'Employee Code is required.' })
+    // }
+    // if (!occupation) {
+    //     errors.value.push({ key: fullName, text: 'Occupation is required.' })
+    // }
+    // if (!department) {
+    //     errors.value.push({ key: fullName, text: 'Department is required.' })
+    // }
+
+    if (fullName && code && occupation && department) {
+        return false
+    }
+
+    return true;
+})
+
 const actions = {
     closeModal() {
         emits("close");
     },
     save() {
-
+        if (!isMissingField.value) {
+            console.log('submit')
+            console.log(employeeInfo.data)
+        } else {
+            console.log('errors')
+        }
     }
 }
 

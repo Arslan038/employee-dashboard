@@ -3,7 +3,7 @@
         <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700 mb-1">
             {{ label }}
         </label>
-        <input :id="id" :value="modelValue" :type="type" :placeholder="placeholder" @input="handleInput"
+        <input :id="id" :value="modelValue" :type="type" :placeholder="placeholder" :required="required" @input="handleInput"
             class="p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
 
@@ -33,6 +33,10 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    required: {
+        type: Boolean,
+        default: false
+    }
 })
 const emit = defineEmits(['update:modelValue']);
 

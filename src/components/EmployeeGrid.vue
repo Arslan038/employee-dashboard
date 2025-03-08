@@ -1,13 +1,12 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="grid grid-cols-3 items-center gap-4 mb-4">
-
       <SearchInput class="col-span-2" @on-search="actions.onEmployeeSearch" />
       <div class="flex justify-end">
-        <button class="bg-blue-500 rounded py-2 px-6 text-white" @click="actions.createEmployee">Create Employee</button>
-      </div>  
+        <Button color="blue" @click="actions.createEmployee">Create Employee</Button>
+      </div>
     </div>
-    
+
     <!-- Employee Grid (Table for larger screens) -->
     <div class="hidden md:block">
       <table class="min-w-full bg-white border rounded-lg overflow-hidden">
@@ -23,12 +22,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="employee in filteredEmployees" :key="employee.id" class="hover:bg-gray-50">
+          <tr v-for="employee in sortedPaginatedEmployees" :key="employee.id" class="hover:bg-gray-50">
             <td class="text-left text-sm py-2 px-3 border-t">{{ employee.fullName }}</td>
             <td class="text-left text-sm py-2 px-3 border-t">{{ employee.occupation }}</td>
             <td class="text-left text-sm py-2 px-3 border-t">{{ employee.department }}</td>
             <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getEmploymentStatus(employee.dateOfEmployment)
-            }}</td>
+              }}</td>
             <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getTerminationStatus(employee.terminationDate)
               || 'N/A' }}</td>
             <td class="text-left text-sm py-2 px-3 border-t space-x-2">
@@ -46,7 +45,7 @@
 
     <!-- Employee Grid (Cards for smaller screens) -->
     <div class="block md:hidden">
-      <div v-for="employee in filteredEmployees" :key="employee.id"
+      <div v-for="employee in sortedPaginatedEmployees" :key="employee.id"
         class="bg-white p-4 mb-4 border rounded-lg shadow-sm">
         <div class="space-y-2">
           <div><strong>Full Name:</strong> {{ employee.fullName }}</div>
@@ -67,10 +66,22 @@
       </div>
     </div>
 
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mt-4">
+      <Button color="gray" @click="actions.prevPage" :disabled="currentPage === 1">Previous</Button>
+      <span class="text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
+      <Button color="blue" @click="actions.nextPage" :disabled="currentPage === totalPages">Next</Button>
+    </div>
+
     <EmployeeModal v-if="selectedEmployee && viewModal" :is-open="viewModal" :employee="selectedEmployee"
       @close="actions.closeModal" />
 
-    <AddEditEmployee v-if="addEditModal" :is-open="addEditModal" :employee="selectedEmployee" @close="actions.closeModal" />
+    <AddEditEmployee v-if="addEditModal" :is-open="addEditModal" :employee="selectedEmployee"
+      @close="actions.closeModal" />
+
+    <DeleteEmployee v-if="deleteModal && selectedEmployee" :is-open="deleteModal" :employee="selectedEmployee"
+      @close="actions.closeModal" />
+
   </div>
 </template>
 
@@ -78,8 +89,10 @@
 import { computed, ref, reactive } from 'vue';
 import { employees } from '../utils/employees';
 import SearchInput from './SearchInput.vue';
+import Button from '../assets/ui/Button.vue';
 import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
+import DeleteEmployee from './DeleteEmployee.vue';
 
 const columns = [
   { key: 'fullName', text: 'Full Name', sortable: true },
@@ -94,6 +107,9 @@ const employeeList = reactive({
   items: [...employees]
 });
 
+const itemsPerPage = ref(10);
+const currentPage = ref(1);
+
 const searchQuery = ref('');
 const sortKey = ref('');
 const sortDirection = ref('asc');
@@ -104,8 +120,10 @@ const deleteModal = ref(false);
 
 const selectedEmployee = ref(false);
 
+const totalPages = computed(() => Math.ceil(filteredEmployees.value.length / itemsPerPage.value));
+
 const filteredEmployees = computed(() => {
-  let filtered = [];
+  let filtered = employeeList.items;
 
   // Filter Employees
   filtered = employeeList.items.filter((employee) =>
@@ -114,22 +132,28 @@ const filteredEmployees = computed(() => {
     )
   );
 
-  // Sort Employees
-  if (sortKey.value) {
-    filtered.sort((a, b) => {
-      const aValue = a[sortKey.value];
-      const bValue = b[sortKey.value];
-
-      if (aValue < bValue) return sortDirection.value === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection.value === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }
-
-  // If Search is empty and no column sorted return default list
-  if (!searchQuery.value && !sortKey.value) return employeeList.items;
-
   return filtered;
+});
+
+// Paginate Employees (AFTER filtering & sorting)
+const paginatedEmployees = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredEmployees.value.slice(start, end);
+});
+
+// Sort Employees (only on paginated employees)
+const sortedPaginatedEmployees = computed(() => {
+  if (!sortKey.value) return paginatedEmployees.value;
+
+  return [...paginatedEmployees.value].sort((a, b) => {
+    const aValue = a[sortKey.value];
+    const bValue = b[sortKey.value];
+
+    if (aValue < bValue) return sortDirection.value === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortDirection.value === "asc" ? 1 : -1;
+    return 0;
+  });
 });
 
 const actions = {
@@ -148,7 +172,18 @@ const actions = {
         sortDirection.value = 'asc';
       }
     }
+  },
 
+  nextPage() {
+    if (currentPage.value < totalPages.value) {
+      currentPage.value++;
+    }
+  },
+
+  prevPage() {
+    if (currentPage.value > 1) {
+      currentPage.value--;
+    }
   },
 
   // Get employment status
@@ -184,7 +219,8 @@ const actions = {
   },
 
   deleteEmployee(item) {
-
+    selectedEmployee.value = { ...item };
+    deleteModal.value = true;
   },
 
   closeModal() {
