@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto p-4">
-    <div class="grid grid-cols-3 items-center gap-4 mb-4">
-      <SearchInput class="col-span-2" @on-search="actions.onEmployeeSearch" />
-      <div class="flex justify-end">
+    <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 mb-4">
+      <SearchInput class="md:col-span-2" @on-search="actions.onEmployeeSearch" />
+      <div class="flex justify-end order-first md:order-last">
         <Button color="blue" @click="actions.createEmployee">Create Employee</Button>
       </div>
     </div>
@@ -31,12 +31,19 @@
             <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getTerminationStatus(employee.terminationDate)
               || 'N/A' }}</td>
             <td class="text-left text-sm py-2 px-3 border-t space-x-2">
-              <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
+              <EmployeeActions>
+                <ul>
+                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.viewEmployee(employee)">View</li>
+                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.editEmployee(employee)">Edit</li>
+                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.deleteEmployee(employee)">Delete</li>
+                </ul>
+              </EmployeeActions>
+              <!-- <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
                 @click="actions.viewEmployee(employee)">View</button>
               <button class="text-green-500 hover:text-green-700 hover:cursor-pointer"
                 @click="actions.editEmployee(employee)">Edit</button>
               <button class="text-red-500 hover:text-red-700 hover:cursor-pointer"
-                @click="actions.deleteEmployee(employee)">Delete</button>
+                @click="actions.deleteEmployee(employee)">Delete</button> -->
             </td>
           </tr>
         </tbody>
@@ -90,6 +97,7 @@ import { computed, ref, reactive } from 'vue';
 import { employees } from '../utils/employees';
 import SearchInput from './SearchInput.vue';
 import Button from '../components/ui/Button.vue';
+import EmployeeActions from './ui/EmployeeActions.vue';
 import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
 import DeleteEmployee from './DeleteEmployee.vue';
