@@ -1,7 +1,7 @@
 <template>
     <div>
         <button :type="type" :disabled="disabled"
-        :class="`bg-${color}-500 text-white px-6 py-2 rounded hover:bg-${color}-600 disabled:bg-${color}-300 transition duration-300 cursor-pointer`" @click="onClick">
+        :class="`bg-${color}-800 text-white px-6 py-2 rounded hover:bg-${color}-600 disabled:bg-${color}-300 transition duration-300 cursor-pointer`" @click="onClick">
         <slot></slot>
     </button>
     </div>

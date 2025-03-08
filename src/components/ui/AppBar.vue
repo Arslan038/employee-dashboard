@@ -7,7 +7,6 @@
             <div class="text-xl font-bold text-gray-700">MyApp</div>
         </div>
 
-
         <div class="relative">
             <!-- Badge with Avatar -->
             <div class="cursor-pointer flex items-center space-x-4" @click="toggleDropdown">
@@ -22,7 +21,6 @@
                 <span>{{ user.name }}</span>
             </div>
 
-
             <div class="relative">
                 <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md">
                     <ul>
@@ -31,8 +29,6 @@
                 </div>
             </div>
         </div>
-
-
     </header>
 </template>
 

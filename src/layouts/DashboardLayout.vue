@@ -20,6 +20,8 @@
               <RouterLink
                 :to="item.link"
                 class="block p-2 rounded hover:bg-blue-800"
+                active-class="bg-blue-800"
+                exact
               >
                 {{ item.text }}
               </RouterLink>

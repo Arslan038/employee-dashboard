@@ -1,19 +1,6 @@
 <template>
-    <!-- Modal Backdrop -->
-    <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-5 z-50 flex items-center justify-center"
-        @click.self="actions.closeModal">
-        <!-- Modal Content -->
-        <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/2 p-6">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">{{ employee && employee.id ? 'Edit' : 'Add' }} Employee</h2>
-                <button @click="actions.closeModal"
-                    class="text-gray-500 hover:text-gray-700 text-[20px] cursor-pointer">
-                    &times;
-                </button>
-            </div>
-
-            <!-- Modal Body -->
+    <Modal v-if="isOpen" :title="`${employee && employee.id ? 'Edit' : 'Add'} Employee`" @close="actions.closeModal">
+        <template #body>
             <form @submit.prevent="actions.save">
                 <div class="grid grid-cols-2 gap-4">
                     <TextField v-model="employeeInfo.data.code" type="text" label="Employee Code*"
@@ -37,15 +24,16 @@
 
                 <div class="flex justify-end mt-10">
                     <Button type="submit" color="blue" class="mr-2">Save</Button>
-                    <Button type="button" color="gray">Cancel</Button>
+                    <Button type="button" color="gray" @click="actions.closeModal">Cancel</Button>
                 </div>
             </form>
-        </div>
-    </div>
+        </template>
+    </Modal>
 </template>
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
+import Modal from './ui/Modal.vue';
 import TextField from '../components/ui/TextField.vue';
 import Button from '../components/ui/Button.vue';
 

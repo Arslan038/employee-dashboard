@@ -1,17 +1,6 @@
 <template>
-    <!-- Modal Backdrop -->
-    <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-5 z-50 flex items-center justify-center"
-        @click.self="closeModal">
-        <!-- Modal Content -->
-        <div v-if="employee" class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/2 p-6">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Employee Details</h2>
-                <button @click="closeModal" class="text-gray-500 hover:text-gray-700 text-[20px] cursor-pointer">
-                    &times;
-                </button>
-            </div>
-
+    <Modal v-if="isOpen && employee" title="Employee Details" lg-width="1/3" @close="actions.closeModal">
+        <template #body>
             <!-- Modal Body -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex flex-col">
@@ -30,13 +19,14 @@
 
             <!-- Modal Footer -->
             <div class="flex justify-end mt-10">
-                <Button color="gray" @click="closeModal">Cancel</Button>
+                <Button color="gray" @click="actions.closeModal">Cancel</Button>
             </div>
-        </div>
-    </div>
+        </template>
+    </Modal>
 </template>
 
 <script setup>
+import Modal from './ui/Modal.vue';
 import Button from '../components/ui/Button.vue';
 const props = defineProps({
     isOpen: {
@@ -51,8 +41,9 @@ const props = defineProps({
 
 const emits = defineEmits(["close"]);
 
-// Close modal function
-const closeModal = () => {
-    emits("close");
+const actions = {
+    closeModal() {
+        emits("close");
+    }
 };
 </script>
