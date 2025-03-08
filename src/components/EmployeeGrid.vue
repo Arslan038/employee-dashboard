@@ -1,6 +1,13 @@
 <template>
   <div class="container mx-auto p-4">
-    <SearchInput class="mb-3" @on-search="actions.onEmployeeSearch" />
+    <div class="grid grid-cols-3 items-center gap-4 mb-4">
+
+      <SearchInput class="col-span-2" @on-search="actions.onEmployeeSearch" />
+      <div class="flex justify-end">
+        <button class="bg-blue-500 rounded py-2 px-6 text-white" @click="actions.createEmployee">Create Employee</button>
+      </div>  
+    </div>
+    
     <!-- Employee Grid (Table for larger screens) -->
     <div class="hidden md:block">
       <table class="min-w-full bg-white border rounded-lg overflow-hidden">
@@ -26,11 +33,11 @@
               || 'N/A' }}</td>
             <td class="text-left text-sm py-2 px-3 border-t space-x-2">
               <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
-                @click="actions.viewEmployee(employee.id)">View</button>
+                @click="actions.viewEmployee(employee)">View</button>
               <button class="text-green-500 hover:text-green-700 hover:cursor-pointer"
-                @click="actions.editEmployee(employee.id)">Edit</button>
+                @click="actions.editEmployee(employee)">Edit</button>
               <button class="text-red-500 hover:text-red-700 hover:cursor-pointer"
-                @click="actions.deleteEmployee(employee.id)">Delete</button>
+                @click="actions.deleteEmployee(employee)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -50,22 +57,29 @@
           </div>
           <div class="flex space-x-2">
             <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
-              @click="actions.viewEmployee(employee.id)">View</button>
+              @click="actions.viewEmployee(employee)">View</button>
             <button class="text-green-500 hover:text-green-700 hover:cursor-pointer"
-              @click="actions.editEmployee(employee.id)">Edit</button>
+              @click="actions.editEmployee(employee)">Edit</button>
             <button class="text-red-500 hover:text-red-700 hover:cursor-pointer"
-              @click="actions.deleteEmployee(employee.id)">Delete</button>
+              @click="actions.deleteEmployee(employee)">Delete</button>
           </div>
         </div>
       </div>
     </div>
+
+    <EmployeeModal v-if="selectedEmployee && viewModal" :is-open="viewModal" :employee="selectedEmployee"
+      @close="actions.closeModal" />
+
+    <AddEditEmployee v-if="addEditModal" :is-open="addEditModal" :employee="selectedEmployee" @close="actions.closeModal" />
   </div>
 </template>
 
 <script setup>
+import { computed, ref, reactive } from 'vue';
 import { employees } from '../utils/employees';
 import SearchInput from './SearchInput.vue';
-import { computed, ref, reactive } from 'vue';
+import EmployeeModal from './EmployeeModal.vue';
+import AddEditEmployee from './AddEditEmployee.vue';
 
 const columns = [
   { key: 'fullName', text: 'Full Name', sortable: true },
@@ -83,6 +97,12 @@ const employeeList = reactive({
 const searchQuery = ref('');
 const sortKey = ref('');
 const sortDirection = ref('asc');
+
+const viewModal = ref(false);
+const addEditModal = ref(false);
+const deleteModal = ref(false);
+
+const selectedEmployee = ref(false);
 
 const filteredEmployees = computed(() => {
   let filtered = [];
@@ -148,16 +168,31 @@ const actions = {
     return 'Terminated';
   },
 
-  viewEmployee(id) {
-    console.log('View : ', id);
+  createEmployee() {
+    selectedEmployee.value = null;
+    addEditModal.value = true;
   },
 
-  editEmployee(id) {
-    console.log('Edit : ', id);
+  viewEmployee(item) {
+    selectedEmployee.value = { ...item };
+    viewModal.value = true;
   },
 
-  deleteEmployee(id) {
-    console.log('Delete : ', id)
+  editEmployee(item) {
+    selectedEmployee.value = { ...item };
+    addEditModal.value = true;
+  },
+
+  deleteEmployee(item) {
+
+  },
+
+  closeModal() {
+    viewModal.value = false;
+    addEditModal.value = false;
+    deleteModal.value = false;
+
+    selectedEmployee.value = null;
   }
 }
 </script>

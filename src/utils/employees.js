@@ -133,7 +133,7 @@ export const employees = [
         occupation: "Network Engineer",
         department: "IT",
         dateOfEmployment: "2022-10-01",
-        terminationDate: "2024-10-01",
+        terminationDate: "2025-10-01",
     },
     {
         id: 18,
@@ -156,7 +156,7 @@ export const employees = [
         fullName: "Sam Wright",
         occupation: "Project Manager",
         department: "Project Management",
-        dateOfEmployment: "2023-11-01",
+        dateOfEmployment: "2027-11-01",
         terminationDate: null,
     },
 ];
