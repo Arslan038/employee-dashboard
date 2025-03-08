@@ -46,8 +46,8 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
-import TextField from '../assets/ui/TextField.vue';
-import Button from '../assets/ui/Button.vue';
+import TextField from '../components/ui/TextField.vue';
+import Button from '../components/ui/Button.vue';
 
 const props = defineProps({
     isOpen: {

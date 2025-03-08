@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import Button from '../assets/ui/Button.vue';
+import Button from '../components/ui/Button.vue';
 const props = defineProps({
     isOpen: {
         type: Boolean,

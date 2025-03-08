@@ -89,7 +89,7 @@
 import { computed, ref, reactive } from 'vue';
 import { employees } from '../utils/employees';
 import SearchInput from './SearchInput.vue';
-import Button from '../assets/ui/Button.vue';
+import Button from '../components/ui/Button.vue';
 import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
 import DeleteEmployee from './DeleteEmployee.vue';
@@ -107,7 +107,7 @@ const employeeList = reactive({
   items: [...employees]
 });
 
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(5);
 const currentPage = ref(1);
 
 const searchQuery = ref('');
