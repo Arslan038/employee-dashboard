@@ -1,13 +1,20 @@
-// src/store/index.js
 import { defineStore } from 'pinia';
 
-export const useAppStore = defineStore('app', {
+export const useAppStore = defineStore('appStore', {
   state: () => ({
-    count: 0,
+    notification: {
+      message: '',
+      type: '', // 'success' or 'error'
+      show: false
+    }
   }),
+
   actions: {
-    increment() {
-      this.count++;
-    },
-  },
+    showNotification(message, type = 'success') {
+      this.notification = { message, type, show: true };
+      setTimeout(() => {
+        this.notification.show = false;
+      }, 3000);
+    }
+  }
 });

@@ -34,6 +34,8 @@
       <div class="flex-1 flex flex-col">
         <!-- Top Navbar -->
         <AppBar @toggleSidebar="toggleSidebar" />
+
+        <Alert />
   
         <!-- Content -->
         <main class="flex-1 p-6 overflow-auto">
@@ -46,6 +48,7 @@
   <script setup>
   import { ref } from "vue";
   import AppBar from "../components/ui/AppBar.vue";
+  import Alert from "../components/ui/Alert.vue";
   
   const menuItems = ref([
     { text: "Employee Management", link: "/" },

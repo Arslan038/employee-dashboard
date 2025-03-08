@@ -6,16 +6,20 @@
             </div>
 
             <div class="flex justify-end mt-10">
-                <Button color="red" class="mr-2">Yes, Delete</Button>
-                <Button color="gray" @click="actions.closeModal">Cancel</Button>
+                <Button color="red" class="mr-2" :loading="isLoading" @click="actions.deleteEmployee">Yes,
+                    Delete</Button>
+                <Button color="gray" :loading="isLoading" @click="actions.closeModal">Cancel</Button>
             </div>
         </template>
     </Modal>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import Modal from './ui/Modal.vue';
 import Button from '../components/ui/Button.vue';
+import { useEmployeeStore } from '../stores/employee';
+
 const props = defineProps({
     isOpen: {
         type: Boolean,
@@ -27,11 +31,24 @@ const props = defineProps({
     },
 });
 
-const emits = defineEmits(["close"]);
+const emit = defineEmits(["close"]);
+
+const store = useEmployeeStore();
+
+const isLoading = ref(false);
 
 const actions = {
     closeModal() {
-        emits("close");
+        emit("close");
+    },
+
+    deleteEmployee() {
+        isLoading.value = true;
+        store.deleteEmployee(props.employee.id).then((data) => {
+            actions.closeModal();
+        }).finally(() => {
+            isLoading.value = false;
+        });
     }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 mb-4">
       <SearchInput class="md:col-span-2" @on-search="actions.onEmployeeSearch" />
       <div class="flex justify-end order-first md:order-last">
@@ -9,7 +9,7 @@
 
     <!-- Employee Grid (Table for larger screens) -->
     <div class="hidden md:block">
-      <table class="min-w-full bg-white border rounded-lg overflow-hidden">
+      <table class="min-w-full bg-white border-b rounded-lg overflow-x-hidden">
         <thead class="bg-gray-100">
           <tr>
             <th v-for="column in columns" :key="column" class="py-3 px-3 hover:cursor-pointer"
@@ -93,14 +93,17 @@
 </template>
 
 <script setup>
-import { computed, ref, reactive } from 'vue';
-import { employees } from '../utils/employees';
+import { computed, ref, reactive, watch } from 'vue';
 import SearchInput from './SearchInput.vue';
 import Button from '../components/ui/Button.vue';
 import EmployeeActions from './ui/EmployeeActions.vue';
 import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
 import DeleteEmployee from './DeleteEmployee.vue';
+
+const props = defineProps({
+  employees: Array
+})
 
 const columns = [
   { key: 'fullName', text: 'Full Name', sortable: true },
@@ -112,7 +115,7 @@ const columns = [
 ];
 
 const employeeList = reactive({
-  items: [...employees]
+  items: [...props.employees]
 });
 
 const itemsPerPage = ref(5);
@@ -239,4 +242,10 @@ const actions = {
     selectedEmployee.value = null;
   }
 }
+
+watch(() => props.employees, (val) => {
+  if(val && val.length) {
+    employeeList.items = [...val]
+  }
+}, { immediate: true })
 </script>

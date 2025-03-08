@@ -1,13 +1,21 @@
-<script setup>
-import EmployeeGrid from '../components/EmployeeGrid.vue'
-</script>
-
 <template>
   <div>
-    <EmployeeGrid />
+    <EmployeeGrid :employees="employees" />
   </div>
 </template>
 
-<style scoped>
+<script setup>
+import { computed, onMounted } from 'vue';
+import EmployeeGrid from '../components/EmployeeGrid.vue';
+import { useEmployeeStore } from '../stores/employee';
 
-</style>
+const store = useEmployeeStore();
+
+onMounted(() => {
+  store.fetchEmployees();
+})
+
+const employees = computed(() => store.employees);
+
+</script>
+

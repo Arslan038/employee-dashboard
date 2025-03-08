@@ -1,5 +1,5 @@
 <template>
-    <Modal v-if="isOpen" :title="`${employee && employee.id ? 'Edit' : 'Add'} Employee`" @close="actions.closeModal">
+    <Modal v-if="isOpen" :title="`${employee && employee.id ? 'Edit' : 'Add'} Employee`" persistent @close="actions.closeModal">
         <template #body>
             <form @submit.prevent="actions.save">
                 <div class="grid grid-cols-2 gap-4">
@@ -23,8 +23,8 @@
                 </div>
 
                 <div class="flex justify-end mt-10">
-                    <Button type="submit" color="blue" class="mr-2">Save</Button>
-                    <Button type="button" color="gray" @click="actions.closeModal">Cancel</Button>
+                    <Button type="submit" color="blue" class="mr-2" :loadng="isLoading">Save</Button>
+                    <Button type="button" color="gray" :loading="isLoading" @click="actions.closeModal">Cancel</Button>
                 </div>
             </form>
         </template>
@@ -36,6 +36,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import Modal from './ui/Modal.vue';
 import TextField from '../components/ui/TextField.vue';
 import Button from '../components/ui/Button.vue';
+import { useEmployeeStore } from '../stores/employee';
 
 const props = defineProps({
     isOpen: {
@@ -49,7 +50,11 @@ const props = defineProps({
     },
 });
 
-const emits = defineEmits(["close"]);
+const emit = defineEmits(["close"]);
+
+const store = useEmployeeStore();
+
+const isLoading = ref(false);
 
 const employeeInfo = reactive({
     data: {
@@ -89,12 +94,29 @@ const isMissingField = computed(() => {
 
 const actions = {
     closeModal() {
-        emits("close");
+        emit("close");
     },
     save() {
         if (!isMissingField.value) {
-            console.log('submit')
-            console.log(employeeInfo.data)
+            const payload = { ...employeeInfo.data };
+
+            isLoading.value = true;
+
+            if (!props.employee) {
+                // Create New Employee
+                store.addEmployee(payload).then(() => {
+                    actions.closeModal();
+                }).finally(() => {
+                    isLoading.value = false;
+                });
+            } else {
+                // Update Employee
+                store.updateEmployee(payload).then(() => {
+                    actions.closeModal();
+                }).finally(() => {
+                    isLoading.value = false;
+                });
+            }
         } else {
             console.log('errors')
         }

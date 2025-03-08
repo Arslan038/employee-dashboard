@@ -6,7 +6,7 @@
             </div>
 
             <div class="relative" @click="toggleDropdown">
-                <div v-if="dropdownOpen" class="absolute z-10 right-0 mt-2 w-auto bg-white shadow-md rounded-md">
+                <div v-if="dropdownOpen" class="absolute z-100 left-0 mt-2 w-auto bg-white shadow-md rounded-md">
                     <slot></slot>
                 </div>
             </div>
