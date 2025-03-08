@@ -3,6 +3,9 @@
     <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 mb-4">
       <SearchInput class="md:col-span-2" @on-search="actions.onEmployeeSearch" />
       <div class="flex justify-end order-first md:order-last">
+        <DownloadCsv :data="sortedPaginatedEmployees" :labels="labels" :filename="'employees.csv'">
+          <Button color="purple" class="mr-1">Export to CSV</Button>
+        </DownloadCsv>
         <Button color="blue" @click="actions.createEmployee">Create Employee</Button>
       </div>
     </div>
@@ -108,11 +111,19 @@ import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
 import DeleteEmployee from './DeleteEmployee.vue';
 import Pagination from './ui/Pagination.vue';
+import DownloadCsv from 'vue-json-csv';
 
 const props = defineProps({
   employees: Array,
   loading: Boolean
-})
+});
+
+const label = {
+  fullName: 'Full Name',
+  code: 'Code',
+  occupation: 'Occupation',
+  dateOfEmployment: 'Date of Employment'
+}
 
 const columns = [
   { key: 'fullName', text: 'Full Name', sortable: true },
