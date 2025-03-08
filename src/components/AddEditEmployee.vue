@@ -1,5 +1,6 @@
 <template>
-    <Modal v-if="isOpen" :title="`${employee && employee.id ? 'Edit' : 'Add'} Employee`" persistent @close="actions.closeModal">
+    <Modal v-if="isOpen" :title="`${employee && employee.id ? 'Edit' : 'Add'} Employee`" persistent
+        @close="actions.closeModal">
         <template #body>
             <form @submit.prevent="actions.save">
                 <div class="grid grid-cols-2 gap-4">
@@ -37,6 +38,8 @@ import Modal from './ui/Modal.vue';
 import TextField from '../components/ui/TextField.vue';
 import Button from '../components/ui/Button.vue';
 import { useEmployeeStore } from '../stores/employee';
+import { useAppStore } from '../stores/app';
+import dayjs from 'dayjs';
 
 const props = defineProps({
     isOpen: {
@@ -53,6 +56,7 @@ const props = defineProps({
 const emit = defineEmits(["close"]);
 
 const store = useEmployeeStore();
+const appStore = useAppStore();
 
 const isLoading = ref(false);
 
@@ -72,18 +76,6 @@ const errors = ref([]);
 
 const isMissingField = computed(() => {
     const { fullName, code, occupation, department } = employeeInfo.data;
-    // if (!fullName) {
-    //     errors.value.push({ key: fullName, text: 'Full name is required.' });
-    // }
-    // if (!code) {
-    //     errors.value.push({ key: fullName, text: 'Employee Code is required.' })
-    // }
-    // if (!occupation) {
-    //     errors.value.push({ key: fullName, text: 'Occupation is required.' })
-    // }
-    // if (!department) {
-    //     errors.value.push({ key: fullName, text: 'Department is required.' })
-    // }
 
     if (fullName && code && occupation && department) {
         return false
@@ -96,9 +88,44 @@ const actions = {
     closeModal() {
         emit("close");
     },
+    isValidForm() {
+        let isValid = true;
+
+        const today = dayjs();
+
+        // if (employeeInfo.data.dateOfEmployment) {
+        //     const isFutureEmployed = dayjs(employeeInfo.data.dateOfEmployment).isAfter(today);
+        //     if (isFutureEmployed) {
+        //         appStore.showNotification('Employment Date should not be in future.', 'error');
+        //         isValid = false;
+        //         return
+        //     }
+        // }
+
+        if (!employeeInfo.data.dateOfEmployment && employeeInfo.data.terminationDate) {
+            appStore.showNotification('Employment Date is required for Termination Date.', 'error');
+            isValid = false;
+            return
+        }
+
+        if (employeeInfo.data.terminationDate && employeeInfo.data.dateOfEmployment) {
+            const employedDate = dayjs(employeeInfo.data.dateOfEmployment);
+            const isPastTerminated = dayjs(employeeInfo.data.terminationDate).isBefore(employedDate);
+            if (isPastTerminated) {
+                appStore.showNotification('Termination Date should not be in past of Employement Date.', 'error');
+                isValid = false;
+                return
+            }
+        }
+
+        return isValid;
+
+    },
     save() {
         if (!isMissingField.value) {
             const payload = { ...employeeInfo.data };
+
+            if (!actions.isValidForm()) return;
 
             isLoading.value = true;
 

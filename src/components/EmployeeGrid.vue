@@ -7,102 +7,111 @@
       </div>
     </div>
 
-    <!-- Employee Grid (Table for larger screens) -->
-    <div class="hidden md:block">
-      <table class="min-w-full bg-white border-b rounded-lg overflow-x-hidden">
-        <thead class="bg-gray-100">
-          <tr>
-            <th v-for="column in columns" :key="column" class="py-3 px-3 hover:cursor-pointer"
-              @click="actions.sort(column)">
-              <div class="flex justify-start items-center">
-                <span class="text-sm">{{ column.text }}</span>
-                <img v-if="column.sortable" src="../assets/icons/sort.svg" class="ml-1 h-4 w-4" />
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="employee in sortedPaginatedEmployees" :key="employee.id" class="hover:bg-gray-50">
-            <td class="text-left text-sm py-2 px-3 border-t">{{ employee.fullName }}</td>
-            <td class="text-left text-sm py-2 px-3 border-t">{{ employee.occupation }}</td>
-            <td class="text-left text-sm py-2 px-3 border-t">{{ employee.department }}</td>
-            <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getEmploymentStatus(employee.dateOfEmployment)
-              }}</td>
-            <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getTerminationStatus(employee.terminationDate)
-              || 'N/A' }}</td>
-            <td class="text-left text-sm py-2 px-3 border-t space-x-2">
-              <EmployeeActions>
-                <ul>
-                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.viewEmployee(employee)">View</li>
-                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.editEmployee(employee)">Edit</li>
-                  <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.deleteEmployee(employee)">Delete</li>
-                </ul>
-              </EmployeeActions>
-              <!-- <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
+    <template v-if="loading">
+      <div class="text-center my-5">
+        Loading Employees...
+      </div>
+    </template>
+
+    <template v-if="!loading">
+      <!-- Employee Grid (Table for larger screens) -->
+      <div class="hidden md:block">
+        <table class="min-w-full bg-white border-b rounded-lg overflow-x-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th v-for="column in columns" :key="column" class="py-3 px-3 hover:cursor-pointer"
+                @click="actions.sort(column)">
+                <div class="flex justify-start items-center">
+                  <span class="text-sm">{{ column.text }}</span>
+                  <img v-if="column.sortable" src="../assets/icons/sort.svg" class="ml-1 h-4 w-4" />
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="employee in sortedPaginatedEmployees" :key="employee.id" class="hover:bg-gray-50">
+              <td class="text-left text-sm py-2 px-3 border-t">{{ employee.fullName }}</td>
+              <td class="text-left text-sm py-2 px-3 border-t">{{ employee.occupation }}</td>
+              <td class="text-left text-sm py-2 px-3 border-t">{{ employee.department }}</td>
+              <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getEmploymentStatus(employee.dateOfEmployment)
+                }}</td>
+              <td class="text-left text-sm py-2 px-3 border-t">{{ actions.getTerminationStatus(employee.terminationDate)
+                || 'N/A' }}</td>
+              <td class="text-left text-sm py-2 px-3 border-t space-x-2">
+                <!-- Employee Table Actions Dropdown -->
+                <EmployeeActions>
+                  <ul>
+                    <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.viewEmployee(employee)">View
+                    </li>
+                    <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.editEmployee(employee)">Edit
+                    </li>
+                    <li class="cursor-pointer p-1 px-2 hover:bg-gray-100" @click="actions.deleteEmployee(employee)">
+                      Delete
+                    </li>
+                  </ul>
+                </EmployeeActions>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Employee Grid (Cards for smaller screens) -->
+      <div class="block md:hidden">
+        <div v-for="employee in sortedPaginatedEmployees" :key="employee.id"
+          class="bg-white p-4 mb-4 border rounded-lg shadow-sm">
+          <div class="space-y-2">
+            <div><strong>Full Name:</strong> {{ employee.fullName }}</div>
+            <div><strong>Occupation:</strong> {{ employee.occupation }}</div>
+            <div><strong>Department:</strong> {{ employee.department }}</div>
+            <div><strong>Date of Employment:</strong> {{ actions.getEmploymentStatus(employee.dateOfEmployment) }}</div>
+            <div><strong>Termination Date:</strong> {{ actions.getTerminationStatus(employee.terminationDate) || 'N/A'
+              }}
+            </div>
+            <div class="flex space-x-2">
+              <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
                 @click="actions.viewEmployee(employee)">View</button>
               <button class="text-green-500 hover:text-green-700 hover:cursor-pointer"
                 @click="actions.editEmployee(employee)">Edit</button>
               <button class="text-red-500 hover:text-red-700 hover:cursor-pointer"
-                @click="actions.deleteEmployee(employee)">Delete</button> -->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Employee Grid (Cards for smaller screens) -->
-    <div class="block md:hidden">
-      <div v-for="employee in sortedPaginatedEmployees" :key="employee.id"
-        class="bg-white p-4 mb-4 border rounded-lg shadow-sm">
-        <div class="space-y-2">
-          <div><strong>Full Name:</strong> {{ employee.fullName }}</div>
-          <div><strong>Occupation:</strong> {{ employee.occupation }}</div>
-          <div><strong>Department:</strong> {{ employee.department }}</div>
-          <div><strong>Date of Employment:</strong> {{ actions.getEmploymentStatus(employee.dateOfEmployment) }}</div>
-          <div><strong>Termination Date:</strong> {{ actions.getTerminationStatus(employee.terminationDate) || 'N/A' }}
-          </div>
-          <div class="flex space-x-2">
-            <button class="text-blue-500 hover:text-blue-700 hover:cursor-pointer"
-              @click="actions.viewEmployee(employee)">View</button>
-            <button class="text-green-500 hover:text-green-700 hover:cursor-pointer"
-              @click="actions.editEmployee(employee)">Edit</button>
-            <button class="text-red-500 hover:text-red-700 hover:cursor-pointer"
-              @click="actions.deleteEmployee(employee)">Delete</button>
+                @click="actions.deleteEmployee(employee)">Delete</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-between items-center mt-4">
-      <Button color="gray" @click="actions.prevPage" :disabled="currentPage === 1">Previous</Button>
-      <span class="text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
-      <Button color="blue" @click="actions.nextPage" :disabled="currentPage === totalPages">Next</Button>
-    </div>
+      <!-- Pagination Controls -->
+      <Pagination :currentPage="currentPage" :totalPages="totalPages" @next="actions.nextPage"
+        @prev="actions.prevPage" />
 
-    <EmployeeModal v-if="selectedEmployee && viewModal" :is-open="viewModal" :employee="selectedEmployee"
-      @close="actions.closeModal" />
+      <!-- View Employee Details -->
+      <EmployeeModal v-if="selectedEmployee && viewModal" :is-open="viewModal" :employee="selectedEmployee"
+        @close="actions.closeModal" />
 
-    <AddEditEmployee v-if="addEditModal" :is-open="addEditModal" :employee="selectedEmployee"
-      @close="actions.closeModal" />
+      <!-- Add or Edit Employee Form -->
+      <AddEditEmployee v-if="addEditModal" :is-open="addEditModal" :employee="selectedEmployee"
+        @close="actions.closeModal" />
 
-    <DeleteEmployee v-if="deleteModal && selectedEmployee" :is-open="deleteModal" :employee="selectedEmployee"
-      @close="actions.closeModal" />
-
+      <!-- Delete Employee Form -->
+      <DeleteEmployee v-if="deleteModal && selectedEmployee" :is-open="deleteModal" :employee="selectedEmployee"
+        @close="actions.closeModal" />
+    </template>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, reactive, watch } from 'vue';
+import { computed, ref, reactive, watchEffect } from 'vue';
 import SearchInput from './SearchInput.vue';
 import Button from '../components/ui/Button.vue';
 import EmployeeActions from './ui/EmployeeActions.vue';
 import EmployeeModal from './EmployeeModal.vue';
 import AddEditEmployee from './AddEditEmployee.vue';
 import DeleteEmployee from './DeleteEmployee.vue';
+import Pagination from './ui/Pagination.vue';
 
 const props = defineProps({
-  employees: Array
+  employees: Array,
+  loading: Boolean
 })
 
 const columns = [
@@ -243,9 +252,8 @@ const actions = {
   }
 }
 
-watch(() => props.employees, (val) => {
-  if(val && val.length) {
-    employeeList.items = [...val]
-  }
-}, { immediate: true })
+// Watch Employee Prop to update the list
+watchEffect(() => {
+  employeeList.items = props.employees;
+});
 </script>
