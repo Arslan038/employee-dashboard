@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 mb-4">
       <SearchInput class="md:col-span-2" @on-search="actions.onEmployeeSearch" />
       <div class="flex justify-end order-first md:order-last">
-        <DownloadCsv :data="sortedPaginatedEmployees" :labels="labels" :filename="'employees.csv'">
+        <DownloadCsv :data="sortedPaginatedEmployees" :labels="label" :filename="'employees.csv'">
           <Button color="purple" class="mr-1">Export to CSV</Button>
         </DownloadCsv>
         <Button color="blue" @click="actions.createEmployee">Create Employee</Button>
@@ -121,8 +121,10 @@ const props = defineProps({
 const label = {
   fullName: 'Full Name',
   code: 'Code',
+  department: 'Department',
   occupation: 'Occupation',
-  dateOfEmployment: 'Date of Employment'
+  dateOfEmployment: 'Date of Employment',
+  terminationDate: 'Termination Date',
 }
 
 const columns = [
